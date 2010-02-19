@@ -1,0 +1,88 @@
+#!/bin/sh
+# Automate update repos derived from:
+# http://gitorious.org/vjaquez-beagleboard/marmita
+
+OEROOT=`pwd`
+GIT=`which git` || exit 1
+GIT="${GIT} --no-pager"
+TARGET=$1
+
+checkout () {
+    $GIT checkout $1
+}
+
+branch () {
+    $GIT checkout -b $1 $2
+}
+
+branch_exists () {
+    out=$($GIT branch | grep $1)
+    if [ -z $out ]; then
+	return 0;
+    fi
+    return 1;
+}
+
+checkout_maybe_branch () {
+    cd ${OEROOT}/$1 || return 
+    branch_exists $2
+    if [ $? == 0 ]; then
+	branch $2 $3
+    fi
+    pull $2
+}
+
+checkout_branch () {
+	cd ${OEROOT}/$1 || return
+	branch_exists $2
+	if [ $? != 0 ]; then
+		$GIT checkout $2
+    else
+        echo "Creating development brach: $2"
+        $GIT checkout -b $2
+	fi
+}
+
+clone () {
+    $GIT clone $1 $2
+}
+
+pull () {
+    if [ "$1" ]; then
+	checkout $1
+    else
+	checkout "master"
+    fi
+    $GIT pull --stat --rebase
+}
+
+# $1 - repository url
+# $2 - local directory
+# $3 - local branch name
+clone_or_pull () {
+    if [ -d ${OEROOT}/$2 ]; then
+	cd ${OEROOT}/$2 && pull $3
+    else
+	cd ${OEROOT} && clone $1 $2
+    fi
+}
+
+#
+# clone bitbake
+# 
+clone_or_pull "git://git.openembedded.org/bitbake.git" "bitbake"
+
+#
+# Use stable version of bitbake
+#
+checkout_maybe_branch "bitbake" "stable" "origin/1.8"
+
+#
+# clone OE
+#
+clone_or_pull "git://git.openembedded.org/openembedded.git" "openembedded" "org.openembedded.dev"
+
+#
+# Check out working branch
+#
+checkout_branch "openembedded" "${TARGET}"

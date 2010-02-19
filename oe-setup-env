@@ -1,0 +1,54 @@
+#!/bin/sh
+# Setup enviroment for OpenEmbedded
+# Adrian Alonso <aalonso00@gmail.com>
+
+OEROOT="${HOME}/workspace/oe"
+CUR_DIR=`pwd`
+TARGET=$1
+
+if [ ! -d ${OEROOT} ]; then
+    mkdir -p ${OEROOT}
+    cp oe-setup-env ${OEROOT}
+    cp oe-repos-update ${OEROOT}
+fi
+
+if [[ "${OEROOT}" != "${CUR_DIR}" ]]; then
+    cd ${OEROOT}
+fi
+
+# Set default machine if not provided as argument
+[[ -z ${TARGET} ]] && TARGET="xilinx-ml507"
+
+#unset BBPATH
+
+case "${TARGET}" in
+	"xilinx-ml507")
+        if [ ! -d ${OEROOT}/build-${TARGET}/conf ]; then
+            install -m 644 ${CUR_DIR}/${TARGET}.local.conf \
+                    ${OEROOT}/build-${TARGET}/conf
+        fi
+	;;
+	"beagleboard") 
+        if [ ! -d ${OEROOT}/build-${TARGET}/conf ]; then
+            install -m 644 ${CUR_DIR}/${TARGET}.local.conf \
+                    ${OEROOT}/build-${TARGET}/conf
+        fi
+	;;
+	*)
+		echo -e "Error unsorpported target, edit this script to suit your needs"
+		exit -1
+	;;
+esac
+
+[[ -z ${OEROOT} ]] && export OEROOT=${OEROOT}
+[[ -z ${BB_ENV_EXTRAWHITE} ]] && export BB_ENV_EXTRAWHITE="OEROOT"
+
+export BBPATH=${BBPATH}:${OEROOT}/build-${TARGET}:${OEROOT}/openembedded
+export BBPATH=${OEROOT}/build-${TARGET}:${OEROOT}/openembedded
+export PATH=${PATH}:${OEROOT}/bitbake/bin
+
+
+./oe-repos-update ${TARGET}
+
+cd ${OEROOT}/build-${TARGET}/conf
+
