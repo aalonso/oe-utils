@@ -22,16 +22,10 @@ fi
 #unset BBPATH
 
 case "${TARGET}" in
-	"xilinx-ml507")
+	"xilinx-ml507" | "beagleboard")
         if [ ! -d ${OEROOT}/build-${TARGET}/conf ]; then
             install -m 644 ${CUR_DIR}/${TARGET}.local.conf \
-                    ${OEROOT}/build-${TARGET}/conf
-        fi
-	;;
-	"beagleboard") 
-        if [ ! -d ${OEROOT}/build-${TARGET}/conf ]; then
-            install -m 644 ${CUR_DIR}/${TARGET}.local.conf \
-                    ${OEROOT}/build-${TARGET}/conf
+            ${OEROOT}/build-${TARGET}/conf/local.conf
         fi
 	;;
 	*)
@@ -47,8 +41,6 @@ export BBPATH=${BBPATH}:${OEROOT}/build-${TARGET}:${OEROOT}/openembedded
 export BBPATH=${OEROOT}/build-${TARGET}:${OEROOT}/openembedded
 export PATH=${PATH}:${OEROOT}/bitbake/bin
 
-
 ./oe-repos-update ${TARGET}
 
 cd ${OEROOT}/build-${TARGET}/conf
-
