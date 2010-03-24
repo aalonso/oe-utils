@@ -24,7 +24,7 @@ fi
 case "${TARGET}" in
 	"xilinx-ml507" | "beagleboard")
         if [ ! -d ${OEROOT}/build-${TARGET}/conf ]; then
-            install -m 644 ${CUR_DIR}/${TARGET}.local.conf \
+            cp ${CUR_DIR}/${TARGET}.local.conf \
             ${OEROOT}/build-${TARGET}/conf/local.conf
         fi
 	;;
