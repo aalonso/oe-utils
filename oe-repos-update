@@ -75,7 +75,7 @@ clone_or_pull "git://git.openembedded.org/bitbake.git" "bitbake"
 #
 # Use stable version of bitbake
 #
-checkout_maybe_branch "bitbake" "stable" "origin/1.8"
+checkout_maybe_branch "bitbake" "1.10" "origin/1.10"
 
 #
 # clone OE
