@@ -8,7 +8,13 @@ TARGET=$1
 
 if [ ! -d ${OEROOT} ]; then
     mkdir -p ${OEROOT}
+fi
+
+if [ ! -f ${OEROOT}/oe-setup-env ]; then
     cp oe-setup-env ${OEROOT}
+fi
+
+if [ ! -f ${OEROOT}/oe-repos-update ]; then
     cp oe-repos-update ${OEROOT}
 fi
 
@@ -24,7 +30,7 @@ fi
 case "${TARGET}" in
 	"xilinx-ml507" | "beagleboard")
         if [ ! -d ${OEROOT}/build-${TARGET}/conf ]; then
-            mkdir -p ${OEROOR}/build-${TARGET}/conf
+            mkdir -p ${OEROOT}/build-${TARGET}/conf
             cp ${CUR_DIR}/${TARGET}.local.conf \
             ${OEROOT}/build-${TARGET}/conf/local.conf
         fi
